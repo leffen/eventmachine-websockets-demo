@@ -1,7 +1,29 @@
 <!doctype html>
 <html>
-  <head>
-  </head>
+<head>
+  <!-- Image from http://www.funnyordie.com/topic/bieber -->
+  <link rel="shortcut icon" href="favicon.gif" />
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
+
+
+  <style type="text/css">
+      body { padding-top: 60px; padding-bottom: 40px;}
+      .chart rect { fill: steelblue; stroke: white; }
+      .count { text-align: right; }
+      footer { margin-top: 70px; }
+          /* font-family:'Rockwell W01'; */
+      footer a {  font-weight: bold; }
+      footer a:hover { text-decoration: none; }
+      footer a span.nixon { color: #D7E035; }
+      footer a span.mcinnes { color: #44A2BB; }
+      footer div.logos{ text-align: right; }
+      footer div.logos a{ margin-left: 5px; }
+  </style>
+</head>
   <body>
     <div class="container">
       <h1>WebSockets Chat App</h1>
@@ -12,7 +34,24 @@
       </div>
     </div>
 
+    <div class="container">
+      <div class="hero-unit">
+        <h1>Stemmer<br/><small>updated every second</small></h1>
+      </div>
+      <div class="row">
+        <div class="span8 offset2" id="chart"></div>
+      </div>
+     </div>
+
+
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+
+
+
+
     <script>
       // where our WebSockets logic will go later
       var socket, host;
@@ -73,6 +112,27 @@
       $("#disconnect").click(function() {
         socket.close()
       });
+
+
+      google.load('visualization', '1', {packages:['gauge']});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+          var data = google.visualization.arrayToDataTable([
+              ['Label', 'Value'],
+              ['Memory', 80]
+
+          ]);
+
+          var options = {
+              width: 400, height: 120,
+              redFrom: 90, redTo: 100,
+              yellowFrom:75, yellowTo: 90,
+              minorTicks: 5
+          };
+
+          var chart = new google.visualization.Gauge(document.getElementById('chart'));
+          chart.draw(data, options);
+      }
     </script>
   </body>
 </html>
