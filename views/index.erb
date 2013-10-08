@@ -16,11 +16,12 @@
     <script>
       // where our WebSockets logic will go later
       var socket, host;
-      host = "ws://localhost:3001";
+      host = 'ws://' + window.location.hostname + ':<%= @em_port%>';
 
       function connect() {
         try {
           socket = new WebSocket(host);
+            console.log(host);
 
           addMessage("Socket State: " + socket.readyState);
 
