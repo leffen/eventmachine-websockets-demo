@@ -1,14 +1,8 @@
 <!doctype html>
 <html>
 <head>
-  <!-- Image from http://www.funnyordie.com/topic/bieber -->
   <link rel="shortcut icon" href="favicon.gif" />
-  <!-- Latest compiled and minified CSS -->
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
-
-  <!-- Optional theme -->
-  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
-
 
   <style type="text/css">
       body { padding-top: 60px; padding-bottom: 40px;}
@@ -26,7 +20,7 @@
 </head>
   <body>
     <div class="container">
-      <h1>WebSockets Chat App</h1>
+      <h1>WebSockets Demo</h1>
       <div id="chat-log"></div>
       <div id="form">
         <input type="text" id="message">
@@ -36,10 +30,10 @@
 
     <div class="container">
       <div class="hero-unit">
-        <h1>Stemmer<br/><small>updated every second</small></h1>
+        <h1>Stemmer</h1>
       </div>
       <div class="row">
-        <div class="span8 offset2" id="chart"></div>
+        <div class="col-xs-12 col-md-8" id="chart"></div>
       </div>
      </div>
 
@@ -73,6 +67,7 @@
           }
 
           socket.onmessage = function(msg) {
+
             addMessage("Received: " + msg.data);
           }
         } catch(exception) {
@@ -115,18 +110,23 @@
 
 
       google.load('visualization', '1', {packages:['gauge']});
-      google.setOnLoadCallback(drawChart);
-      function drawChart() {
+      google.setOnLoadCallback(function(){ drawChart(0) });
+
+
+      function drawChart(num_answers) {
+
+
           var data = google.visualization.arrayToDataTable([
               ['Label', 'Value'],
-              ['Memory', 80]
+              ['Svar', num_answers]
 
           ]);
 
           var options = {
-              width: 400, height: 120,
-              redFrom: 90, redTo: 100,
-              yellowFrom:75, yellowTo: 90,
+              width: 300, height: 300,
+              min: -25, max:25,
+              redFrom: -25, redTo: 0,
+              greenFrom:0, greenTo: 24,
               minorTicks: 5
           };
 

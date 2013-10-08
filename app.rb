@@ -45,7 +45,6 @@ module EmTest
       end
     end
 
-    #App.run! :bind=>'0.0.0.0',:port => 3000
     Thin::Server.start App, '0.0.0.0', 3000
   end
 end
