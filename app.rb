@@ -9,6 +9,13 @@ module EmTest
     @em_channel ||= EM::Channel.new
   end
 
+  def self.add_answer(spm_num,ip,vote)
+    @answers ||= {}
+
+    @answers[spm_num]
+
+  end
+
   EM_PORT='3001'
 
   EM.run do
@@ -21,6 +28,11 @@ module EmTest
 
       get '/msg/:msg' do
         EmTest.em_channel.push params[:msg]
+        status 200
+      end
+
+      post '/vote/:spm/:state' do
+
         status 200
       end
 

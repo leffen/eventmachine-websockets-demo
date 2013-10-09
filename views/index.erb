@@ -21,18 +21,24 @@
   <body>
     <div class="container">
       <h1>WebSockets Demo</h1>
-      <div id="chat-log"></div>
-      <div id="form">
-        <input type="text" id="message">
-        <button id="disconnect">Disconnect</button>
-      </div>
+
     </div>
 
     <div class="container">
       <div class="hero-unit">
         <h1>Stemmer</h1>
+        <button type="button" class="btn btn-success yes_vote" >Ja</button>
+        <button type="button" class="btn btn-danger no_vote" >Nei</button>
       </div>
       <div class="row">
+        <div class="col-xs-12 col-md-4" >
+          <div id="chat-log"></div>
+          <div id="form">
+            <input type="text" id="message">
+            <button id="disconnect">Disconnect</button>
+          </div>
+
+        </div>
         <div class="col-xs-12 col-md-8" id="chart"></div>
       </div>
      </div>
@@ -54,30 +60,25 @@
       function connect() {
         try {
           socket = new WebSocket(host);
-            console.log(host);
 
           addMessage("Socket State: " + socket.readyState);
 
-          socket.onopen = function() {
-            addMessage("Socket Status: " + socket.readyState + " (open)");
-          }
-
-          socket.onclose = function() {
-            addMessage("Socket Status: " + socket.readyState + " (closed)");
-          }
+          socket.onopen = function() {addMessage("Socket Status: " + socket.readyState + " (open)");}
+          socket.onclose = function() {addMessage("Socket Status: " + socket.readyState + " (closed)");}
 
           socket.onmessage = function(msg) {
-
-            addMessage("Received: " + msg.data);
+            if( isNaN(msg.data) ){
+              addMessage("Received: " + msg.data);
+            } else {
+              drawChart(parseInt(msg.data, 10));
+            }
           }
         } catch(exception) {
           addMessage("Error: " + exception);
         }
       }
 
-      function addMessage(msg) {
-        $("#chat-log").append("<p>" + msg + "</p>");
-      }
+      function addMessage(msg) {$("#chat-log").append("<p>" + msg + "</p>"); }
 
       function send() {
         var text = $("#message").val();
@@ -97,8 +98,14 @@
       }
 
       $(function() {
+        $(".yes_vote").click(function() {$.post("/vote/yes");});
+        $(".no_vote").click(function() {$.post("/vote/no");});
+
         connect();
+
+
       });
+
 
       $('#message').keypress(function(event) {
         if (event.keyCode == '13') { send(); }
@@ -107,7 +114,6 @@
       $("#disconnect").click(function() {
         socket.close()
       });
-
 
       google.load('visualization', '1', {packages:['gauge']});
       google.setOnLoadCallback(function(){ drawChart(0) });
