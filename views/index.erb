@@ -3,20 +3,8 @@
 <head>
   <link rel="shortcut icon" href="favicon.gif" />
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/ewd.css">
 
-  <style type="text/css">
-      body { padding-top: 60px; padding-bottom: 40px;}
-      .chart rect { fill: steelblue; stroke: white; }
-      .count { text-align: right; }
-      footer { margin-top: 70px; }
-          /* font-family:'Rockwell W01'; */
-      footer a {  font-weight: bold; }
-      footer a:hover { text-decoration: none; }
-      footer a span.nixon { color: #D7E035; }
-      footer a span.mcinnes { color: #44A2BB; }
-      footer div.logos{ text-align: right; }
-      footer div.logos a{ margin-left: 5px; }
-  </style>
 </head>
   <body>
     <div class="container">
@@ -42,71 +30,31 @@
   <!-- Latest compiled and minified JavaScript -->
   <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
     <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+    <script type='text/javascript' src='js/ewd_socket.js'></script>
 
 
 
 
     <script>
-      // where our WebSockets logic will go later
-      var socket, host;
-      host = 'ws://' + window.location.hostname + ':<%= @em_port%>';
-
-      function connect() {
-        try {
-          socket = new WebSocket(host);
-            console.log(host);
-
-          addMessage("Socket State: " + socket.readyState);
-
-          socket.onopen = function() {
-            addMessage("Socket Status: " + socket.readyState + " (open)");
-          }
-
-          socket.onclose = function() {
-            addMessage("Socket Status: " + socket.readyState + " (closed)");
-          }
-
-          socket.onmessage = function(msg) {
-
-            addMessage("Received: " + msg.data);
-          }
-        } catch(exception) {
-          addMessage("Error: " + exception);
-        }
-      }
-
-      function addMessage(msg) {
-        $("#chat-log").append("<p>" + msg + "</p>");
-      }
 
       function send() {
         var text = $("#message").val();
         if (text == '') {
-          addMessage("Please Enter a Message");
           return;
         }
-
-        try {
-          socket.send(text);
-          addMessage("Sent: " + text)
-        } catch(exception) {
-          addMessage("Failed To Send")
-        }
-
+          ewd_sockets.send(text);
         $("#message").val('');
       }
 
       $(function() {
-        connect();
+          ewd_sockets.connect('ws://' + window.location.hostname + ':<%= @em_port%>','#chat-log');
       });
 
       $('#message').keypress(function(event) {
         if (event.keyCode == '13') { send(); }
       });
 
-      $("#disconnect").click(function() {
-        socket.close()
-      });
+      $("#disconnect").click(function() {ewd.disconnect();});
 
 
       google.load('visualization', '1', {packages:['gauge']});
