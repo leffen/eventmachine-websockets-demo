@@ -1,86 +1,113 @@
 <!doctype html>
 <html>
 <head>
-  <link rel="shortcut icon" href="favicon.gif" />
+  <link rel="shortcut icon" href="favicon.gif"/>
   <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
   <link rel="stylesheet" href="css/ewd.css">
 
 </head>
-  <body>
-    <div class="container">
-      <h1>WebSockets Demo</h1>
-      <div id="chat-log"></div>
-      <div id="form">
-        <input type="text" id="message">
-        <button id="disconnect">Disconnect</button>
+<body>
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="hero-unit">
+        <h1>WebSockets Demo</h1>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <div class="col-lg-10">
+            <input type="text" id="message" class="form-control" placeholder="Melding">
+          </div>
+          <div class="col-lg-2">
+            <button id="disconnect" class="btn">Disconnect</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row top_pad">
+        <div class="form-group">
+          <div class="col-lg-2">
+            <button type="button" class="btn btn-success yes_vote ">Ja</button>
+            <button type="button" class="btn btn-danger no_vote  ">Nei</button>
+          </div>
+          <div class="col-lg-10">
+            <label class="">Dette er ett spørsmål</label>
+          </div>
+        </div>
+      </div>
+      <div class="row top_pad">
+        <div id="chat-log"></div>
       </div>
     </div>
 
-    <div class="container">
-      <div class="hero-unit">
-        <h1>Stemmer</h1>
-      </div>
-      <div class="row">
-        <div class="col-xs-12 col-md-8" id="chart"></div>
-      </div>
-     </div>
+    <div class="col-lg-4">
+      <h1>Stemmer</h1>
+
+      <div id="chart"></div>
+    </div>
+  </div>
+</div>
 
 
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <!-- Latest compiled and minified JavaScript -->
-  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
-    <script type='text/javascript' src='https://www.google.com/jsapi'></script>
-    <script type='text/javascript' src='js/ewd_socket.js'></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<script type='text/javascript' src='https://www.google.com/jsapi'></script>
+<script type='text/javascript' src='js/ewd_socket.js'></script>
 
 
+<script>
 
-
-    <script>
-
-      function send() {
+    function send() {
         var text = $("#message").val();
         if (text == '') {
-          return;
+            return;
         }
-          ewd_sockets.send(text);
+        ewd_sockets.send(text);
         $("#message").val('');
-      }
+    }
 
-      $(function() {
-          ewd_sockets.connect('ws://' + window.location.hostname + ':<%= @em_port%>','#chat-log');
-      });
+    $(function () {
 
-      $('#message').keypress(function(event) {
+        $(".yes_vote").click(function () {$.post("/vote/1/yes");});
+        $(".no_vote").click(function () {$.post("/vote/1/no");});
+
+        ewd_sockets.connect('ws://' + window.location.hostname + ':<%= @em_port%>', '#chat-log');
+    });
+
+    $('#message').keypress(function (event) {
         if (event.keyCode == '13') { send(); }
-      });
+    });
 
-      $("#disconnect").click(function() {ewd.disconnect();});
-
-
-      google.load('visualization', '1', {packages:['gauge']});
-      google.setOnLoadCallback(function(){ drawChart(0) });
+    $("#disconnect").click(function () {ewd.disconnect();});
 
 
-      function drawChart(num_answers) {
+    google.load('visualization', '1', {packages: ['gauge']});
+    google.setOnLoadCallback(function () { drawChart(0) });
 
 
-          var data = google.visualization.arrayToDataTable([
-              ['Label', 'Value'],
-              ['Svar', num_answers]
+    function drawChart(num_answers) {
 
-          ]);
 
-          var options = {
-              width: 300, height: 300,
-              min: -25, max:25,
-              redFrom: -25, redTo: 0,
-              greenFrom:0, greenTo: 24,
-              minorTicks: 5
-          };
+        var data = google.visualization.arrayToDataTable([
+            ['Label', 'Value'],
+            ['Svar', num_answers]
 
-          var chart = new google.visualization.Gauge(document.getElementById('chart'));
-          chart.draw(data, options);
-      }
-    </script>
-  </body>
+        ]);
+
+        var options = {
+            width: 300, height: 300,
+            min: -25, max: 25,
+            redFrom: -25, redTo: 0,
+            greenFrom: 0, greenTo: 24,
+            minorTicks: 5
+        };
+
+        var chart = new google.visualization.Gauge(document.getElementById('chart'));
+        chart.draw(data, options);
+    }
+</script>
+</body>
 </html>
