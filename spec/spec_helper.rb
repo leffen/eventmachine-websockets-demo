@@ -19,11 +19,7 @@ Sinatra::Base.set :logging, false
 $:.unshift File.dirname(__FILE__) + '/../lib'
 $:.unshift File.dirname(__FILE__)
 
-require 'gcontacts'
-
-Contacts.configure do |config|
-  config.redis =  MockRedis.new
-end
+require 'ewd'
 
 RSpec.configure do |config|
   config.mock_with :rspec
