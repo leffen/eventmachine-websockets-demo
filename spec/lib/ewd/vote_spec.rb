@@ -4,7 +4,7 @@ module Ewd
   describe Votes do
 
     let(:votes) { Votes.new }
-    let(:questions) { 10.times.map { |i| [i, "sporsmal #{i}", ['yes', 'no'].shuffle.first] } }
+    let(:questions) { 10.times.map { |i| [i, "sporsmal #{i}", 'yes'] } }
     let(:ips) { 10.times.map { |i| "192.168.3.#{random(256)}" } }
     let(:answers) { {1 => {"192.168.3.101" => {"vote" =>"yes","vote_value"=>'yes', "points"=>0}}} }
 

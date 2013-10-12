@@ -13,13 +13,12 @@ module Ewd
 
       set_questions(questions) if questions
       answers.each{|spm,v| v.each{|ip,value| set_answer(spm,ip,value["vote"]) } } if answers
-
     end
 
     def set_answer(spm, ip, vote)
       key = spm.to_i
       @answers[key] ||= {}
-      @answers[key][ip.to_s] ={"vote" => vote, "vote_value" => vote_to_i(vote), "points"=>0}
+      @answers[key][ip.to_s] ={"vote" => vote, "vote_value" => vote_to_i(vote), "points"=>vote_points(spm,vote)}
       spm_answer_yes_no_sum(key)
     end
 
@@ -52,6 +51,11 @@ module Ewd
 
     def vote_to_i(vote)
       VOTES[vote.downcase].to_i
+    end
+
+    def vote_points(spm,vote)
+      return 0 unless @questions.has_key?(spm.to_i)
+      @questions[spm.to_i]["answer"] == vote.to_s ? 1 : 0
     end
 
   end
