@@ -19,6 +19,12 @@ module EmTest
         erb :index
       end
 
+      post '/vote/:spm/:state' do
+        puts "spm=#{params[:spm]} vote = #{params[:state]} #{request.ip}"
+        # puts "request = #{request.inspect}"
+        status 200
+      end
+
       get '/msg/:msg' do
         EmTest.em_channel.push params[:msg]
         status 200
