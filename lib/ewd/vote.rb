@@ -29,7 +29,7 @@ module Ewd
 
     # Use a array to set a batch of answers. Format [[spm,label,correct_answer],[...]]
     def set_questions(questions)
-      questions.each { |q| set_question(q[0], q[1], q[2]) }
+      questions.each { |q| set_question(q[0], q[1], q[2]) } if questions && questions.respond_to?(:each)
     end
 
     def set_question(spm, label, correct_answer)

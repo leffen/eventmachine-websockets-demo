@@ -70,11 +70,19 @@
     }
 
     $(function () {
-
-        $(".yes_vote").click(function () {$.post("/vote/1/yes");});
+       $(".yes_vote").click(function () {$.post("/vote/1/yes");});
         $(".no_vote").click(function () {$.post("/vote/1/no");});
 
-        ewd_sockets.connect('ws://' + window.location.hostname + ':<%= @em_port%>', '#chat-log');
+        ewd_sockets.connect('ws://' + window.location.hostname + ':<%= @em_port%>',
+                            '#chat-log',
+                             function (msg) {
+                                 console.log(msg);
+                                 data = JSON.parse(msg.data);
+                                 if(data.action=== "vote_update") {
+                                     drawChart(data.sum);
+                                 }
+                             }
+        );
     });
 
     $('#message').keypress(function (event) {

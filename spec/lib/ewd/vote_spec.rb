@@ -46,11 +46,10 @@ module Ewd
       it "should be able to create from json data" do
         data = {"questions" => questions, "answers" => answers }
         votes = Votes.from_json(data)
+
         expect(votes.questions.count).to eq(questions.count)
         expect(votes.answers.count).to eq(answers.count)
-        puts "votes = #{votes.to_json}"
-        expect(votes.spm_answer_yes_no_sum(1)).to eq(1)
-
+        expect(votes.spm_answer_yes_no_sum(answers.first[0])).to eq(1)
       end
 
 

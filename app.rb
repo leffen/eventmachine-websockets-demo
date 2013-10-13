@@ -1,6 +1,8 @@
 require 'thin'
 require 'em-websocket'
 require 'sinatra/base'
+require 'em-redis'
+require_relative 'lib/ewd'
 
 
 module EmTest
@@ -14,22 +16,42 @@ module EmTest
   EM.run do
 
     class App < Sinatra::Base
+
+      def self.save_votes(votes)
+        redis = EM::Protocols::Redis.connect
+        redis.set("votes", votes.to_json)
+      end
+
+      def self.init_votes(votes_json)
+        if votes_json && data = JSON.parse(votes_json)
+          Ewd::Votes.from_json(data)
+        else
+          votes = Ewd::Votes.new
+          votes.set_question(1, 'Svar JA', 'yes')
+        end
+      end
+
+      configure do
+        redis = EM::Protocols::Redis.connect
+        redis.get('votes') do |response|
+          set :votes, init_votes(response)
+        end
+      end
+
       get '/' do
         @em_port = EM_PORT
         erb :index
       end
 
+
       post '/vote/:spm/:state' do
-        puts "spm=#{params[:spm]} vote = #{params[:state]} #{request.ip}"
-        # puts "request = #{request.inspect}"
+        sum = settings.votes.set_answer(params[:spm], request.ip, params[:state])
+        redis = EM::Protocols::Redis.connect
+        redis.set("votes", settings.votes.to_json)
+
+        EmTest.em_channel.push({action: :vote_update, spm: params[:spm].to_i, sum: sum}.to_json)
         status 200
       end
-
-      get '/msg/:msg' do
-        EmTest.em_channel.push params[:msg]
-        status 200
-      end
-
     end
 
     @clients = []
@@ -37,8 +59,8 @@ module EmTest
     EM::WebSocket.start(:host => '0.0.0.0', :port => EM_PORT) do |ws|
       ws.onopen do |handshake|
         @clients << ws
-        sid = EmTest.em_channel.subscribe{|msg| ws.send msg}
-        EmTest.em_channel.push "Subscriber ID #{sid} connected tp #{handshake.path}!"
+        sid = EmTest.em_channel.subscribe { |msg| ws.send msg }
+        EmTest.em_channel.push( {action: :msg, data: "Subscriber ID #{sid} connected tp #{handshake.path}!"}.to_json  )
       end
 
       ws.onclose do

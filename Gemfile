@@ -4,7 +4,8 @@ gem 'thin'
 gem 'sinatra'
 gem 'em-websocket'
 gem 'shotgun'
-
+gem 'redis'
+gem 'em-redis'
 
 group :test do
   gem 'rspec', '~> 2.14'

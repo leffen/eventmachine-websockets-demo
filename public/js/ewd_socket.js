@@ -7,7 +7,7 @@ var ewd_sockets = (function () {
     $(ewd.messageTag).append("<p>" + msg + "</p>");
   };
 
-  ewd.connect = function connect(host, message_tag) {
+  ewd.connect = function connect(host, message_tag, action_ruter) {
     try {
       ewd.socket = new WebSocket(host);
       ewd.messageTag = message_tag;
@@ -16,7 +16,7 @@ var ewd_sockets = (function () {
 
       ewd.socket.onopen = function() {addMessage("Socket Status: " + ewd.socket.readyState + " (open)");}
       ewd.socket.onclose = function() {addMessage("Socket Status: " + ewd.socket.readyState + " (closed)");}
-      ewd.socket.onmessage = function(msg) {addMessage("Received: " + msg.data);}
+      ewd.socket.onmessage = function(msg) { action_ruter(msg); addMessage("Received: " + msg.data);}
 
     } catch(exception) {
       addMessage("Error: " + exception);
